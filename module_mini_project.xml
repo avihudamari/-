@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_mini_project" default="compile.module.mini_project">
+  <dirname property="module.mini_project.basedir" file="${ant.file.module_mini_project}"/>
+  
+  <property name="module.jdk.home.mini_project" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.mini_project" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.mini_project" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.mini_project" value="-encoding UTF-8 -source 9 -target 9 ${compiler.args}"/>
+  
+  <property name="mini_project.output.dir" value="${module.mini_project.basedir}/out/production/mini_project"/>
+  <property name="mini_project.testoutput.dir" value="${module.mini_project.basedir}/out/test/mini_project"/>
+  
+  <path id="mini_project.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="mini_project.module.production.classpath">
+    <path refid="${module.jdk.classpath.mini_project}"/>
+    <path refid="library.kotlinjavaruntime.classpath"/>
+  </path>
+  
+  <path id="mini_project.runtime.production.module.classpath">
+    <pathelement location="${mini_project.output.dir}"/>
+    <path refid="library.kotlinjavaruntime.classpath"/>
+  </path>
+  
+  <path id="mini_project.module.classpath">
+    <path refid="${module.jdk.classpath.mini_project}"/>
+    <pathelement location="${mini_project.output.dir}"/>
+    <path refid="library.kotlinjavaruntime.classpath"/>
+    <pathelement location="${idea.home}/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${idea.home}/lib/junit-4.12.jar"/>
+  </path>
+  
+  <path id="mini_project.runtime.module.classpath">
+    <pathelement location="${mini_project.testoutput.dir}"/>
+    <pathelement location="${mini_project.output.dir}"/>
+    <path refid="library.kotlinjavaruntime.classpath"/>
+    <pathelement location="${idea.home}/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${idea.home}/lib/junit-4.12.jar"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.mini_project">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.mini_project">
+    <patternset refid="excluded.from.module.mini_project"/>
+  </patternset>
+  
+  <path id="mini_project.module.sourcepath">
+    <dirset dir="${module.mini_project.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  <path id="mini_project.module.test.sourcepath">
+    <dirset dir="${module.mini_project.basedir}">
+      <include name="src/Test"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.mini_project" depends="compile.module.mini_project.production,compile.module.mini_project.tests" description="Compile module mini_project"/>
+  
+  <target name="compile.module.mini_project.production" depends="register.custom.compilers" description="Compile module mini_project; production classes">
+    <mkdir dir="${mini_project.output.dir}"/>
+    <javac2 destdir="${mini_project.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.mini_project}/javac">
+      <compilerarg line="${compiler.args.mini_project}"/>
+      <bootclasspath refid="mini_project.module.bootclasspath"/>
+      <classpath refid="mini_project.module.production.classpath"/>
+      <src refid="mini_project.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.mini_project"/>
+    </javac2>
+    
+    <copy todir="${mini_project.output.dir}">
+      <fileset dir="${module.mini_project.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.mini_project.tests" depends="register.custom.compilers,compile.module.mini_project.production" description="compile module mini_project; test classes" unless="skip.tests">
+    <mkdir dir="${mini_project.testoutput.dir}"/>
+    <javac2 destdir="${mini_project.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.mini_project}/javac">
+      <compilerarg line="${compiler.args.mini_project}"/>
+      <bootclasspath refid="mini_project.module.bootclasspath"/>
+      <classpath refid="mini_project.module.classpath"/>
+      <src refid="mini_project.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.mini_project"/>
+    </javac2>
+    
+    <copy todir="${mini_project.testoutput.dir}">
+      <fileset dir="${module.mini_project.basedir}/src/Test">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.mini_project" description="cleanup module">
+    <delete dir="${mini_project.output.dir}"/>
+    <delete dir="${mini_project.testoutput.dir}"/>
+  </target>
+</project>
